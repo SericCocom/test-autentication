@@ -16,6 +16,10 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
+  async findById(id: number): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { id } });
+  }
+
   async create(registerUserDto: RegisterUserDto): Promise<User> {
     const existingUser = await this.findByEmail(registerUserDto.email);
     if (existingUser) {

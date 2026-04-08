@@ -1,33 +1,47 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcryptjs';
-import { User } from '../users/user.entity';
+
+import { UsersService } from '../users/users.service';
+import { TokenService } from './token.service';
+import { LoginDto } from './dto/login.dto';
+import { AuthTokens } from './interfaces/auth-tokens.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly tokenService: TokenService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<User | null> {
-    const user = await this.usersService.findByEmail(email);
-    if (user && (await bcrypt.compare(pass, user.password))) {
-      return user;
-    }
-    return null;
-  }
-
-  async login(loginDto: LoginDto) {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
-    if (!user) {
+  async login(loginDto: LoginDto): Promise<AuthTokens> {
+    const user = await this.usersService.findByEmail(loginDto.email);
+    if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { email: user.email, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+
+    const accessToken = this.tokenService.generateAccessToken(
+      user.id,
+      user.email,
+    );
+    const refreshToken = await this.tokenService.createRefreshToken(user.id);
+
+    return { accessToken, refreshToken };
+  }
+
+  async refresh(
+    userId: number,
+    email: string,
+    tokenId: number,
+  ): Promise<AuthTokens> {
+    await this.tokenService.revokeToken(tokenId);
+
+    const accessToken = this.tokenService.generateAccessToken(userId, email);
+    const refreshToken = await this.tokenService.createRefreshToken(userId);
+
+    return { accessToken, refreshToken };
+  }
+
+  async logout(userId: number): Promise<void> {
+    await this.tokenService.revokeAllUserTokens(userId);
   }
 }

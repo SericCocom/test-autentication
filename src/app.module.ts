@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { User } from './users/user.entity';
+import { RefreshToken } from './auth/entities/refresh-token.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { User } from './users/user.entity';
     TypeOrmModule.forRoot({
       type: 'better-sqlite3',
       database: 'db.sqlite',
-      entities: [User],
+      entities: [User, RefreshToken],
       synchronize: true, // Use only in development
     }),
     UsersModule,
