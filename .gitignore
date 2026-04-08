@@ -1,0 +1,22 @@
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+
+# Node.js
+node_modules
+dist
+# NestJS
+# nest-cli.json (Removed from ignore to track)
+
+# Local Env
+.env
+
+# Logs
+npm-debug.log*
+e2e_error.log
+
+# Database
+db.sqlite
