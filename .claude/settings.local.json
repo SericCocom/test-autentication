@@ -3,7 +3,20 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(npm test:*)",
-      "Bash(npx jest:*)"
+      "Bash(npx jest:*)",
+      "Bash(npm install:*)",
+      "Bash(npx ts-node -e ':*)",
+      "Bash(npx nest:*)",
+      "Bash(node dist/main.js)",
+      "Bash(curl -s http://localhost:3000/api/docs-json)",
+      "Bash(node -e ':*)",
+      "Bash(kill %1)",
+      "Bash(netstat -ano)",
+      "Bash(findstr \":3000\")",
+      "Read(//c/Users/Seric Cocom/Documents/Github/test-autentication/**)",
+      "Bash(xargs -I{} taskkill /PID {} /F)",
+      "Bash(curl -s http://localhost:3000/api/docs-json -o swagger_out.json)",
+      "Bash(rm -f swagger_out.json)"
     ]
   }
 }

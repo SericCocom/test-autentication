@@ -81,6 +81,31 @@ async myMethod(): Promise<AuthTokens> {
 3. Register both in `AuthModule.providers`.
 4. Do NOT modify `AuthService`.
 
+## Swagger / API documentation checklist
+
+Every time you add or modify a controller endpoint or DTO, apply these rules:
+
+### Controllers
+- `@ApiTags('tag-name')` on every controller class — groups endpoints in Swagger UI.
+- `@ApiOperation({ summary, description })` on every route method.
+- `@ApiResponse({ status, description, type })` for every possible HTTP status (200, 201, 400, 401, 409…).
+- Use `@ApiUnauthorizedResponse` and `@ApiConflictResponse` helpers instead of generic `@ApiResponse` where semantically correct.
+- `@ApiBearerAuth('access-token')` on every route protected by `JwtAuthGuard`.
+- `@ApiBody({ type: DtoClass })` when the inferred type from `@Body()` is not picked up correctly.
+
+### DTOs
+- Every field in a request DTO must have `@ApiProperty({ example, description })`.
+- Every response DTO (classes returned from controllers) must have `@ApiProperty` on all fields.
+- Never use plain interfaces as `type` in `@ApiResponse` — create a dedicated DTO class (e.g. `AuthTokensDto`, `UserResponseDto`).
+- Request DTOs live in `src/*/dto/*.dto.ts`; response DTOs in `src/auth/dto/*-response.dto.ts`.
+
+### main.ts Swagger setup
+- Swagger is mounted at `GET /api/docs` (JSON spec at `GET /api/docs-json`).
+- The `addBearerAuth` key is `'access-token'` — always match this name in `@ApiBearerAuth('access-token')`.
+- Do not move Swagger setup inline in `bootstrap()` — keep it in the `setupSwagger(app)` helper.
+
+---
+
 ## Testing checklist
 
 For every new service:
