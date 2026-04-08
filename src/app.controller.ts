@@ -1,40 +1,33 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 import { AppService } from './app.service';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { CurrentUser } from './auth/decorators/current-user.decorator';
-import { CurrentUserResponseDto } from './auth/dto/current-user-response.dto';
-import type { RequestUser } from './auth/interfaces/request-user.interface';
+import { JwtAuthGuard } from './auth/presentation/guards/jwt-auth.guard';
+import { CurrentUser } from './auth/presentation/decorators/current-user.decorator';
+import { CurrentUserResponseDto } from './auth/presentation/dto/current-user-response.dto';
+import type { RequestUser } from './auth/presentation/dto/request-user.interface';
 
 @ApiTags('app')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @ApiOperation({ summary: 'Health check', description: 'Returns a greeting. No auth required.' })
-  @ApiResponse({ status: 200, description: 'OK', schema: { example: 'Hello World!' } })
+  @ApiOperation({ summary: 'Health check' })
+  @ApiResponse({ status: 200, schema: { example: 'Hello World!' } })
   @Get()
   getHello(): string {
     return this.appService.getHello();
   }
 
-  @ApiOperation({
-    summary: 'Get current user profile',
-    description: 'Returns the payload decoded from the Bearer access token.',
-  })
+  @ApiOperation({ summary: 'Get current user profile' })
   @ApiBearerAuth('access-token')
-  @ApiResponse({
-    status: 200,
-    description: 'Authenticated user data',
-    type: CurrentUserResponseDto,
-  })
+  @ApiResponse({ status: 200, type: CurrentUserResponseDto })
   @ApiUnauthorizedResponse({ description: 'Missing or invalid Bearer token' })
   @UseGuards(JwtAuthGuard)
   @Get('profile')

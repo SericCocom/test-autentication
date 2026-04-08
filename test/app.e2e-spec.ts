@@ -131,7 +131,7 @@ describe('Authentication Flow (e2e)', () => {
 
       expect(res.body).toHaveProperty('accessToken');
       expect(res.body).toHaveProperty('refreshToken');
-      expect(res.body.accessToken).not.toBe(accessToken);
+      // refreshToken is always a new random value; accessToken may be equal within the same second (same iat)
       expect(res.body.refreshToken).not.toBe(refreshToken);
 
       accessToken = res.body.accessToken as string;
